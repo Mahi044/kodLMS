@@ -63,7 +63,7 @@ function DashboardContent() {
           <h1 className="text-3xl font-bold text-surface-900 dark:text-white">
             {greeting()}, {user?.name?.split(' ')[0]} 👋
           </h1>
-          <p className="text-surface-500 text-sm mt-1">Here's your learning overview</p>
+          <p className="text-surface-500 text-sm mt-1">Here&apos;s your learning overview</p>
         </div>
 
         {loading ? (

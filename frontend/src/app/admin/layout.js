@@ -13,7 +13,7 @@ export default function AdminLayout({ children }) {
 
   useEffect(() => {
     hydrate();
-  }, []);
+  }, [hydrate]);
 
   useEffect(() => {
     if (!isLoading) {
