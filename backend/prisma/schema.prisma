@@ -1,0 +1,109 @@
+// Prisma schema for LMS database
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// Registered users
+model User {
+  id            Int             @id @default(autoincrement())
+  email         String          @unique @db.VarChar(255)
+  password_hash String          @db.VarChar(255)
+  name          String          @db.VarChar(255)
+  created_at    DateTime        @default(now())
+  enrollments   Enrollment[]
+  progress      VideoProgress[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+/// Course subjects
+model Subject {
+  id           Int          @id @default(autoincrement())
+  title        String       @db.VarChar(255)
+  slug         String       @unique @db.VarChar(255)
+  description  String?      @db.Text
+  is_published Boolean      @default(false)
+  created_at   DateTime     @default(now())
+  sections     Section[]
+  enrollments  Enrollment[]
+
+  @@map("subjects")
+}
+
+/// Sections within a subject
+model Section {
+  id          Int     @id @default(autoincrement())
+  subject_id  Int
+  title       String  @db.VarChar(255)
+  order_index Int
+  subject     Subject @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+  videos      Video[]
+
+  @@index([subject_id])
+  @@map("sections")
+}
+
+/// YouTube video entries
+model Video {
+  id               Int             @id @default(autoincrement())
+  section_id       Int
+  title            String          @db.VarChar(255)
+  description      String?         @db.Text
+  youtube_url      String          @db.VarChar(500)
+  order_index      Int
+  duration_seconds Int             @default(0)
+  section          Section         @relation(fields: [section_id], references: [id], onDelete: Cascade)
+  progress         VideoProgress[]
+
+  @@index([section_id])
+  @@map("videos")
+}
+
+/// User enrollments in subjects
+model Enrollment {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  subject_id Int
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  subject    Subject  @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, subject_id])
+  @@map("enrollments")
+}
+
+/// Tracks video watching progress per user
+model VideoProgress {
+  id                    Int       @id @default(autoincrement())
+  user_id               Int
+  video_id              Int
+  last_position_seconds Int       @default(0)
+  is_completed          Boolean   @default(false)
+  completed_at          DateTime?
+  user                  User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  video                 Video     @relation(fields: [video_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, video_id])
+  @@map("video_progress")
+}
+
+/// Stores hashed refresh tokens for JWT rotation
+model RefreshToken {
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  token_hash String    @db.VarChar(500)
+  expires_at DateTime
+  revoked_at DateTime?
+  created_at DateTime  @default(now())
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([token_hash])
+  @@map("refresh_tokens")
+}
