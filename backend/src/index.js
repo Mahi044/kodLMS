@@ -13,9 +13,6 @@ const videosRoutes = require('./modules/videos/videos.routes');
 const progressRoutes = require('./modules/progress/progress.routes');
 const enrollmentsRoutes = require('./modules/enrollments/enrollments.routes');
 const adminRoutes = require('./modules/admin/admin.routes');
-const paymentsRoutes = require('./modules/payments/payments.routes');
-const certificatesRoutes = require('./modules/certificates/certificates.routes');
-const analyticsRoutes = require('./modules/analytics/analytics.routes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,9 +28,6 @@ app.use(
     credentials: true,
   })
 );
-
-// Stripe webhook needs raw body — MUST come before express.json()
-app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 
 // Parse JSON bodies
 app.use(express.json());
@@ -55,9 +49,6 @@ app.use('/api/videos', videosRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/enrollments', enrollmentsRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/payments', paymentsRoutes);
-app.use('/api/certificates', certificatesRoutes);
-app.use('/api/analytics', analyticsRoutes);
 
 // ======================
 // Error Handler (must be last)

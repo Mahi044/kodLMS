@@ -1,29 +1,19 @@
 const prisma = require('../../utils/prisma');
 
 async function createSubject(data) {
-  const { title, description, is_published, is_free, price_cents } = data;
+  const { title, description, is_published } = data;
   // Generate a basic slug
   const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now();
   return prisma.subject.create({
-    data: {
-      title,
-      description,
-      slug,
-      is_published: is_published || false,
-      is_free: is_free !== undefined ? is_free : true,
-      price_cents: price_cents || 0,
-    },
+    data: { title, description, slug, is_published: is_published || false },
   });
 }
 
 async function updateSubject(id, data) {
-  const { title, description, is_published, is_free, price_cents } = data;
-  const updateData = { title, description, is_published };
-  if (is_free !== undefined) updateData.is_free = is_free;
-  if (price_cents !== undefined) updateData.price_cents = price_cents;
+  const { title, description, is_published } = data;
   return prisma.subject.update({
     where: { id },
-    data: updateData,
+    data: { title, description, is_published },
   });
 }
 

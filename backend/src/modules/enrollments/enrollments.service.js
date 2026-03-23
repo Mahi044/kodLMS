@@ -12,18 +12,6 @@ async function enrollUser(userId, subjectId) {
     throw err;
   }
 
-  // Block direct enrollment for paid courses — require payment first
-  if (!subject.is_free) {
-    const payment = await prisma.payment.findFirst({
-      where: { user_id: userId, subject_id: subjectId, status: 'completed' },
-    });
-    if (!payment) {
-      const err = new Error('Payment required for this course');
-      err.statusCode = 402;
-      throw err;
-    }
-  }
-
   const enrollment = await prisma.enrollment.upsert({
     where: { user_id_subject_id: { user_id: userId, subject_id: subjectId } },
     create: { user_id: userId, subject_id: subjectId },

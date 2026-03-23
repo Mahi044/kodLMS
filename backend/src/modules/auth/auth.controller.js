@@ -1,6 +1,5 @@
 const authService = require('./auth.service');
 const { generateAccessToken, generateRefreshToken } = require('../../utils/jwt');
-const { sendWelcomeEmail } = require('../../utils/email');
 // Cookie options for refresh token
 const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
@@ -46,9 +45,6 @@ async function register(req, res) {
     },
     accessToken,
   });
-
-  // Fire-and-forget welcome email
-  sendWelcomeEmail({ name: user.name, email: user.email }).catch(() => {});
 }
 
 /**
