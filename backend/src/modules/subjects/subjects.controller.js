@@ -5,8 +5,10 @@ const subjectsService = require('./subjects.service');
  * Returns all published subjects.
  */
 async function list(req, res) {
-  const subjects = await subjectsService.getAllSubjects(req.query.q);
-  res.json({ subjects });
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
+  const result = await subjectsService.getAllSubjects(req.query.q, page, limit);
+  res.json(result);
 }
 
 /**

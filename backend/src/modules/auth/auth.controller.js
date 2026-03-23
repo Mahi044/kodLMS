@@ -1,6 +1,6 @@
 const authService = require('./auth.service');
 const { generateAccessToken, generateRefreshToken } = require('../../utils/jwt');
-
+const { sendWelcomeEmail } = require('../../utils/email');
 // Cookie options for refresh token
 const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
@@ -38,9 +38,17 @@ async function register(req, res) {
 
   res.status(201).json({
     message: 'Registration successful',
-    user,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    },
     accessToken,
   });
+
+  // Fire-and-forget welcome email
+  sendWelcomeEmail({ name: user.name, email: user.email }).catch(() => {});
 }
 
 /**
@@ -65,7 +73,12 @@ async function login(req, res) {
 
   res.json({
     message: 'Login successful',
-    user,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    },
     accessToken,
   });
 }
@@ -92,7 +105,15 @@ async function refresh(req, res) {
 
   res.cookie('refreshToken', newRefreshToken, REFRESH_COOKIE_OPTIONS);
 
-  res.json({ accessToken, user });
+  res.json({
+    accessToken,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    },
+  });
 }
 
 /**

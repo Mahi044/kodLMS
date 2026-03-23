@@ -16,7 +16,7 @@ async function createUser({ name, email, password }) {
   const password_hash = await hashPassword(password);
   return prisma.user.create({
     data: { name, email, password_hash },
-    select: { id: true, name: true, email: true, created_at: true },
+    select: { id: true, name: true, email: true, role: true, created_at: true },
   });
 }
 
@@ -38,7 +38,7 @@ async function verifyCredentials(email, password) {
     throw err;
   }
 
-  return { id: user.id, name: user.name, email: user.email };
+  return { id: user.id, name: user.name, email: user.email, role: user.role };
 }
 
 /**
@@ -66,7 +66,7 @@ async function validateRefreshToken(token) {
       revoked_at: null,
       expires_at: { gt: new Date() },
     },
-    include: { user: { select: { id: true, name: true, email: true } } },
+    include: { user: { select: { id: true, name: true, email: true, role: true } } },
   });
 
   if (!record) {

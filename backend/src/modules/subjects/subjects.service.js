@@ -3,20 +3,37 @@ const prisma = require('../../utils/prisma');
 /**
  * Get all published subjects, optionally filtered by search query
  */
-async function getAllSubjects(searchQuery) {
+async function getAllSubjects(searchQuery, page = 1, limit = 20) {
   const where = { is_published: true };
 
   if (searchQuery && searchQuery.trim()) {
     where.title = { contains: searchQuery.trim() };
   }
 
-  return prisma.subject.findMany({
-    where,
-    include: {
-      _count: { select: { sections: true } },
+  const skip = (page - 1) * limit;
+
+  const [subjects, total] = await Promise.all([
+    prisma.subject.findMany({
+      where,
+      include: {
+        _count: { select: { sections: true } },
+      },
+      orderBy: { title: 'asc' },
+      skip,
+      take: limit,
+    }),
+    prisma.subject.count({ where }),
+  ]);
+
+  return {
+    subjects,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
     },
-    orderBy: { title: 'asc' },
-  });
+  };
 }
 
 /**

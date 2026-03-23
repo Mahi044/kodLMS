@@ -16,7 +16,7 @@ const REFRESH_TOKEN_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000;
  * @returns {string}
  */
 function generateAccessToken(user) {
-  return jwt.sign({ userId: user.id, email: user.email }, ACCESS_SECRET, {
+  return jwt.sign({ userId: user.id, email: user.email, role: user.role }, ACCESS_SECRET, {
     expiresIn: ACCESS_TOKEN_EXPIRY,
   });
 }

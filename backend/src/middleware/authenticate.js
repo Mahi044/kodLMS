@@ -16,7 +16,7 @@ function authenticate(req, res, next) {
 
   try {
     const decoded = verifyAccessToken(token);
-    req.user = { id: decoded.userId, email: decoded.email };
+    req.user = { id: decoded.userId, email: decoded.email, role: decoded.role };
     next();
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
