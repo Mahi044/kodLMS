@@ -3,11 +3,14 @@
 import { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import toast from 'react-hot-toast';
-import { HiCheck, HiXMark, HiUserCircle, HiClock } from 'react-icons/hi2';
+import { HiCheck, HiXMark, HiUserCircle, HiClock, HiSparkles } from 'react-icons/hi2';
+import confetti from 'canvas-confetti';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminRequestsPage() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [successUser, setSuccessUser] = useState(null);
 
   const fetchRequests = async () => {
     try {
@@ -28,8 +31,19 @@ export default function AdminRequestsPage() {
   const handleApprove = async (id, name) => {
     try {
       await api.post(`/admin/users/${id}/approve`);
-      toast.success(`${name} is now an Admin!`);
+      
+      // Trigger Confetti
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#6366f1', '#10b981', '#f59e0b']
+      });
+
+      setSuccessUser(name);
       setRequests(requests.filter(r => r.id !== id));
+      
+      setTimeout(() => setSuccessUser(null), 5000);
     } catch (err) {
       toast.error('Failed to approve user');
     }
@@ -55,7 +69,36 @@ export default function AdminRequestsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Success Celebration Overlay */}
+      <AnimatePresence>
+        {successUser && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: -20 }}
+            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+          >
+            <div className="bg-white dark:bg-surface-800 p-8 rounded-3xl shadow-2xl border border-emerald-100 dark:border-emerald-900/30 text-center max-w-sm mx-4 pointer-events-auto">
+              <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                <HiSparkles className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-surface-900 dark:white mb-2">Excellent!</h2>
+              <p className="text-surface-600 dark:text-surface-400">
+                <span className="font-bold text-primary-600 dark:text-primary-400">{successUser}</span> is now officially an Admin. 
+                They can now manage courses and content!
+              </p>
+              <button 
+                onClick={() => setSuccessUser(null)}
+                className="mt-6 w-full py-3 bg-surface-900 dark:bg-white text-white dark:text-black rounded-xl font-bold hover:opacity-90 transition-opacity"
+              >
+                Awesome
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-surface-900 dark:text-white">Admin Access Requests</h1>

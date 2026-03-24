@@ -14,17 +14,45 @@ import {
   HiBookOpen,
   HiCheckCircle,
   HiArrowRight,
+  HiSparkles,
 } from 'react-icons/hi2';
+import confetti from 'canvas-confetti';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function DashboardContent() {
   const { user } = useAuthStore();
   const router = useRouter();
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAdminWelcome, setShowAdminWelcome] = useState(false);
 
   useEffect(() => {
     fetchEnrollments();
+    checkAdminWelcome();
   }, []);
+
+  const checkAdminWelcome = () => {
+    if (user?.role === 'admin') {
+      const hasSeen = localStorage.getItem(`admin_welcome_seen_${user.id}`);
+      if (!hasSeen) {
+        setShowAdminWelcome(true);
+        // Trigger Confetti
+        setTimeout(() => {
+          confetti({
+            particleCount: 200,
+            spread: 90,
+            origin: { y: 0.7 },
+            colors: ['#6366f1', '#10b981', '#f59e0b']
+          });
+        }, 500);
+      }
+    }
+  };
+
+  const dismissAdminWelcome = () => {
+    localStorage.setItem(`admin_welcome_seen_${user.id}`, 'true');
+    setShowAdminWelcome(false);
+  };
 
   const fetchEnrollments = async () => {
     try {
@@ -58,6 +86,61 @@ function DashboardContent() {
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-10">
+        {/* Admin Welcome Modal */}
+        <AnimatePresence>
+          {showAdminWelcome && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            >
+              <motion.div
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 20 }}
+                className="bg-white dark:bg-surface-800 rounded-3xl p-8 lg:p-10 shadow-2xl max-w-lg w-full text-center relative overflow-hidden"
+              >
+                {/* Decorative gradients */}
+                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary-500 via-emerald-500 to-indigo-500" />
+                
+                <div className="w-24 h-24 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce">
+                  <HiSparkles className="w-12 h-12 text-primary-600 dark:text-primary-400" />
+                </div>
+
+                <h2 className="text-3xl font-extrabold text-surface-900 dark:text-white mb-4">
+                  Welcome to the Admin Team! ⚡️
+                </h2>
+                
+                <p className="text-lg text-surface-600 dark:text-surface-300 mb-8 leading-relaxed">
+                  Congratulations, <span className="font-bold text-primary-600">{user?.name}</span>! Your request for instructor access has been approved. 
+                  You now have full access to the Admin Portal to create subjects and manage course content.
+                </p>
+
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="bg-surface-50 dark:bg-surface-700/50 p-4 rounded-2xl border border-surface-100 dark:border-surface-700">
+                    <div className="text-2xl mb-1">📚</div>
+                    <div className="text-xs font-bold text-surface-500 uppercase tracking-wider">Subjects</div>
+                    <div className="text-sm dark:text-white">Create & Manage</div>
+                  </div>
+                  <div className="bg-surface-50 dark:bg-surface-700/50 p-4 rounded-2xl border border-surface-100 dark:border-surface-700">
+                    <div className="text-2xl mb-1">🎬</div>
+                    <div className="text-xs font-bold text-surface-500 uppercase tracking-wider">Content</div>
+                    <div className="text-sm dark:text-white">Upload Videos</div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={dismissAdminWelcome}
+                  className="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-bold text-lg shadow-xl shadow-primary-500/25 transition-all active:scale-[0.98]"
+                >
+                  Start Creating
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Greeting */}
         <div className="mb-10">
           <h1 className="text-3xl font-bold text-surface-900 dark:text-white">
