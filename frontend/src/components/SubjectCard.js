@@ -35,7 +35,15 @@ export default function SubjectCard({ subject, progress, onEnrolled }) {
     }
   };
 
-
+  // Continue Learning handler
+  const handleContinue = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const targetUrl = lastVideoId 
+      ? `/subjects/${subject.id}?video=${lastVideoId}`
+      : `/subjects/${subject.id}`;
+    router.push(targetUrl);
+  };
 
   return (
     <Link href={`/subjects/${subject.id}`}>
