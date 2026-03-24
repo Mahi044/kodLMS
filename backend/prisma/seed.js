@@ -28,8 +28,7 @@ async function main() {
     create: {
       title: 'JavaScript Basics',
       slug: 'javascript-basics',
-      description: 'Learn the fundamentals of JavaScript programming — variables, functions, loops, and more.',
-      is_published: true,
+      description: 'Learn the fundamentals of JavaScript programming — variables, functions, loops, and more.'
     },
   });
 
@@ -139,8 +138,7 @@ async function main() {
     create: {
       title: 'React Fundamentals',
       slug: 'react-fundamentals',
-      description: 'Master React from scratch — components, state, hooks, and building real applications.',
-      is_published: true,
+      description: 'Master React from scratch — components, state, hooks, and building real applications.'
     },
   });
 

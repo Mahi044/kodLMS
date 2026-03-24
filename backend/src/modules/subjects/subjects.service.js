@@ -1,10 +1,7 @@
 const prisma = require('../../utils/prisma');
 
-/**
- * Get all published subjects, optionally filtered by search query
- */
 async function getAllSubjects(searchQuery, page = 1, limit = 20) {
-  const where = { is_published: true };
+  const where = {};
 
   if (searchQuery && searchQuery.trim()) {
     where.title = { contains: searchQuery.trim() };

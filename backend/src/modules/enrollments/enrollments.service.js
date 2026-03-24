@@ -6,7 +6,7 @@ const prisma = require('../../utils/prisma');
 async function enrollUser(userId, subjectId) {
   // Verify subject exists and is published
   const subject = await prisma.subject.findUnique({ where: { id: subjectId } });
-  if (!subject || !subject.is_published) {
+  if (!subject) {
     const err = new Error('Subject not found');
     err.statusCode = 404;
     throw err;

@@ -1,10 +1,12 @@
 const adminService = require('./admin.service');
 
 async function createSubject(req, res) {
-  const { title, description, is_published } = req.body;
-  if (!title) return res.status(400).json({ error: 'Title is required' });
+  const { title, description } = req.body;
+  if (!title) {
+    return res.status(400).json({ error: 'Title is required' });
+  }
   
-  const subject = await adminService.createSubject({ title, description, is_published });
+  const subject = await adminService.createSubject({ title, description });
   res.status(201).json({ message: 'Subject created successfully', subject });
 }
 
