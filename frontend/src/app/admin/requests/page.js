@@ -14,7 +14,8 @@ export default function AdminRequestsPage() {
       const { data } = await api.get('/admin/users/requests');
       setRequests(data.users || []);
     } catch (err) {
-      toast.error('Failed to load requests');
+      const msg = err.response?.data?.error || err.message;
+      toast.error(`Failed to load requests: ${msg}`);
     } finally {
       setLoading(false);
     }
