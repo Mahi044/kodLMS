@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import useAuthStore from '../../store/authStore';
 import toast from 'react-hot-toast';
-import { HiAcademicCap, HiEnvelope, HiLockClosed, HiUser } from 'react-icons/hi2';
+import { HiAcademicCap, HiEnvelope, HiLockClosed, HiUser, HiBriefcase } from 'react-icons/hi2';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState('student');
   const [loading, setLoading] = useState(false);
   const { register } = useAuthStore();
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      await register(name, email, password);
+      await register(name, email, password, role);
       toast.success('Account created! Welcome aboard!');
       router.push('/subjects');
     } catch (err) {
@@ -60,6 +61,44 @@ export default function RegisterPage() {
         {/* Form card */}
         <div className="bg-white dark:bg-surface-800/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-black/5 border border-surface-200 dark:border-surface-700/50 p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Account Type Selector */}
+            <div>
+              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
+                Account Type
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setRole('student')}
+                  className={`py-3 px-4 rounded-xl border text-sm font-medium transition-all ${
+                    role === 'student'
+                      ? 'bg-primary-50 dark:bg-primary-900/40 border-primary-500 text-primary-700 dark:text-primary-300 ring-2 ring-primary-500/20'
+                      : 'bg-surface-50 dark:bg-surface-700/50 border-surface-200 dark:border-surface-600 text-surface-600 dark:text-surface-400 hover:border-surface-300'
+                  }`}
+                >
+                  <HiAcademicCap className="w-5 h-5 mx-auto mb-1" />
+                  Student
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole('admin')}
+                  className={`py-3 px-4 rounded-xl border text-sm font-medium transition-all ${
+                    role === 'admin'
+                      ? 'bg-primary-50 dark:bg-primary-900/40 border-primary-500 text-primary-700 dark:text-primary-300 ring-2 ring-primary-500/20'
+                      : 'bg-surface-50 dark:bg-surface-700/50 border-surface-200 dark:border-surface-600 text-surface-600 dark:text-surface-400 hover:border-surface-300'
+                  }`}
+                >
+                  <HiBriefcase className="w-5 h-5 mx-auto mb-1" />
+                  Instructor
+                </button>
+              </div>
+              {role === 'admin' && (
+                <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg border border-amber-100 dark:border-amber-900/50">
+                  Instructor accounts require approval by the site owner. You will have Student access in the meantime.
+                </p>
+              )}
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
                 Full Name

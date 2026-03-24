@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import useAuthStore from '../../store/authStore';
 import Navbar from '../../components/Navbar';
 import Link from 'next/link';
-import { HiBookOpen, HiVideoCamera, HiChartBar } from 'react-icons/hi2';
+import { HiBookOpen, HiVideoCamera, HiChartBar, HiUserGroup } from 'react-icons/hi2';
 
 export default function AdminLayout({ children }) {
   const { isAuthenticated, isLoading, user, hydrate } = useAuthStore();
@@ -67,6 +67,13 @@ export default function AdminLayout({ children }) {
           >
             <HiVideoCamera className="w-5 h-5" />
             Manage Content
+          </Link>
+          <Link
+            href="/admin/requests"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors font-medium border-t border-surface-100 dark:border-surface-800 mt-2 pt-4"
+          >
+            <HiUserGroup className="w-5 h-5 text-primary-500" />
+            Admin Requests
           </Link>
         </aside>
 

@@ -3,6 +3,101 @@ const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
+const courses = [
+  {
+    title: 'JavaScript Basics',
+    description: 'Learn the fundamentals of JavaScript programming — variables, functions, loops, and more.',
+  },
+  {
+    title: 'React Fundamentals',
+    description: 'Master React from scratch — components, state, hooks, and building real applications.',
+  },
+  {
+    title: 'Advanced Node.js',
+    description: 'Deep dive into Node.js architecture, event loop, streams, and performance optimization.',
+  },
+  {
+    title: 'Python for Beginners',
+    description: 'Start your programming journey with Python. Learn syntax, data structures, and basic algorithms.',
+  },
+  {
+    title: 'Data Structures & Algorithms',
+    description: 'Master core CS concepts. Arrays, Trees, Graphs, sorting algorithms, and Big O notation.',
+  },
+  {
+    title: 'HTML & CSS Masterclass',
+    description: 'Build beautiful, responsive websites using modern HTML5 semantic tags and CSS3 Flexbox/Grid.',
+  },
+  {
+    title: 'UI/UX Design Principles',
+    description: 'Learn color theory, typography, user research, and wireframing in Figma.',
+  },
+  {
+    title: 'Full-Stack Web Development',
+    description: 'Connect frontend and backend. Learn REST APIs, authentication, and database integration.',
+  },
+  {
+    title: 'SQL & Database Design',
+    description: 'Design robust schemas, write complex queries, and understand database normalization.',
+  },
+  {
+    title: 'Machine Learning with Python',
+    description: 'A practical introduction to ML using scikit-learn, pandas, and neural networks.',
+  },
+  {
+    title: 'React Native Mobile Dev',
+    description: 'Build cross-platform iOS and Android applications using React Native.',
+  },
+  {
+    title: 'DevOps & CI/CD Pipelines',
+    description: 'Automate your deployments using GitHub Actions, Docker, and Kubernetes.',
+  },
+  {
+    title: 'Cybersecurity Essentials',
+    description: 'Understand common web vulnerabilities, OWASP Top 10, and how to secure your applications.',
+  },
+  {
+    title: 'Cloud Computing with AWS',
+    description: 'Master Amazon Web Services. EC2, S3, Lambda, and Serverless architecture.',
+  },
+  {
+    title: 'Agile Project Management',
+    description: 'Learn Scrum, Kanban, sprint planning, and modern software lifecycle management.',
+  }
+];
+
+// Helper to create dummy sections
+function generateSections() {
+  return [
+    {
+      title: 'Course Introduction',
+      order_index: 1,
+      videos: [
+        { title: 'Welcome to the Course', duration_seconds: 120, order_index: 1 },
+        { title: 'Syllabus Overview', duration_seconds: 300, order_index: 2 },
+        { title: 'Required Software setup', duration_seconds: 450, order_index: 3 },
+      ]
+    },
+    {
+      title: 'Core Concepts',
+      order_index: 2,
+      videos: [
+        { title: 'Theory & Fundamentals', duration_seconds: 600, order_index: 1 },
+        { title: 'First Practical Example', duration_seconds: 900, order_index: 2 },
+        { title: 'Common Pitfalls', duration_seconds: 300, order_index: 3 },
+      ]
+    },
+    {
+      title: 'Advanced Topics',
+      order_index: 3,
+      videos: [
+        { title: 'Deep Dive', duration_seconds: 1200, order_index: 1 },
+        { title: 'Best Practices', duration_seconds: 600, order_index: 2 },
+      ]
+    }
+  ];
+}
+
 async function main() {
   console.log('🌱 Seeding database...');
 
@@ -17,237 +112,58 @@ async function main() {
       password_hash: passwordHash,
     },
   });
-  console.log(`✅ Created user: ${user.email}`);
+  console.log(`✅ Created test user: ${user.email}`);
 
-  // ===========================
-  // Subject 1: JavaScript Basics
-  // ===========================
-  const jsSubject = await prisma.subject.upsert({
-    where: { slug: 'javascript-basics' },
-    update: {},
-    create: {
-      title: 'JavaScript Basics',
-      slug: 'javascript-basics',
-      description: 'Learn the fundamentals of JavaScript programming — variables, functions, loops, and more.'
-    },
-  });
+  let enrolledSubjectIds = [];
 
-  // JS Section 1: Getting Started
-  const jsSection1 = await prisma.section.create({
-    data: {
-      subject_id: jsSubject.id,
-      title: 'Getting Started with JavaScript',
-      order_index: 1,
-      videos: {
-        create: [
-          {
-            title: 'What is JavaScript?',
-            description: 'An introduction to JavaScript and its role in web development.',
-            youtube_url: 'https://www.youtube.com/watch?v=W6NZfCO5SIk',
-            order_index: 1,
-            duration_seconds: 480,
-          },
-          {
-            title: 'Setting Up Your Environment',
-            description: 'How to set up VS Code and Chrome for JavaScript development.',
-            youtube_url: 'https://www.youtube.com/watch?v=PkZNo7MFNFg',
-            order_index: 2,
-            duration_seconds: 360,
-          },
-          {
-            title: 'Your First JavaScript Program',
-            description: 'Writing and running your first JavaScript code.',
-            youtube_url: 'https://www.youtube.com/watch?v=hdI2bqOjy3c',
-            order_index: 3,
-            duration_seconds: 600,
-          },
-        ],
+  for (const course of courses) {
+    const slug = course.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    
+    const subject = await prisma.subject.upsert({
+      where: { slug },
+      update: {},
+      create: {
+        title: course.title,
+        slug,
+        description: course.description
       },
-    },
-  });
+    });
 
-  // JS Section 2: Variables & Data Types
-  const jsSection2 = await prisma.section.create({
-    data: {
-      subject_id: jsSubject.id,
-      title: 'Variables & Data Types',
-      order_index: 2,
-      videos: {
-        create: [
-          {
-            title: 'Variables: var, let, const',
-            description: 'Understanding variable declarations and scoping.',
-            youtube_url: 'https://www.youtube.com/watch?v=9WIJQDvt4Us',
-            order_index: 1,
-            duration_seconds: 540,
-          },
-          {
-            title: 'Data Types in JavaScript',
-            description: 'Numbers, strings, booleans, null, undefined, and objects.',
-            youtube_url: 'https://www.youtube.com/watch?v=O5wlGKCFGHA',
-            order_index: 2,
-            duration_seconds: 420,
-          },
-          {
-            title: 'Working with Strings',
-            description: 'String methods, template literals, and string manipulation.',
-            youtube_url: 'https://www.youtube.com/watch?v=09BwruU4kiY',
-            order_index: 3,
-            duration_seconds: 480,
-          },
-        ],
-      },
-    },
-  });
+    // Check if sections exist (to prevent duplicates on re-run)
+    const sectionCount = await prisma.section.count({ where: { subject_id: subject.id } });
+    
+    if (sectionCount === 0) {
+      const sections = generateSections();
+      for (const sect of sections) {
+        await prisma.section.create({
+          data: {
+            subject_id: subject.id,
+            title: sect.title,
+            order_index: sect.order_index,
+            videos: {
+              create: sect.videos.map(v => ({
+                title: v.title,
+                description: 'Detailed explanation of ' + v.title.toLowerCase(),
+                youtube_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                order_index: v.order_index,
+                duration_seconds: v.duration_seconds
+              }))
+            }
+          }
+        });
+      }
+    }
 
-  // JS Section 3: Functions
-  const jsSection3 = await prisma.section.create({
-    data: {
-      subject_id: jsSubject.id,
-      title: 'Functions',
-      order_index: 3,
-      videos: {
-        create: [
-          {
-            title: 'Function Declarations & Expressions',
-            description: 'Different ways to create functions.',
-            youtube_url: 'https://www.youtube.com/watch?v=FOD408a0EzU',
-            order_index: 1,
-            duration_seconds: 600,
-          },
-          {
-            title: 'Arrow Functions',
-            description: 'ES6 arrow function syntax and when to use them.',
-            youtube_url: 'https://www.youtube.com/watch?v=h33Srr5J9nY',
-            order_index: 2,
-            duration_seconds: 480,
-          },
-        ],
-      },
-    },
-  });
+    console.log(`✅ Seeded subject: ${course.title}`);
+    enrolledSubjectIds.push(subject.id);
+  }
 
-  console.log(`✅ Created subject: ${jsSubject.title} (${3} sections, ${8} videos)`);
-
-  // ===========================
-  // Subject 2: React Fundamentals
-  // ===========================
-  const reactSubject = await prisma.subject.upsert({
-    where: { slug: 'react-fundamentals' },
-    update: {},
-    create: {
-      title: 'React Fundamentals',
-      slug: 'react-fundamentals',
-      description: 'Master React from scratch — components, state, hooks, and building real applications.'
-    },
-  });
-
-  // React Section 1: Introduction
-  const reactSection1 = await prisma.section.create({
-    data: {
-      subject_id: reactSubject.id,
-      title: 'Introduction to React',
-      order_index: 1,
-      videos: {
-        create: [
-          {
-            title: 'What is React?',
-            description: 'Understanding React and component-based architecture.',
-            youtube_url: 'https://www.youtube.com/watch?v=Tn6-PIqc4UM',
-            order_index: 1,
-            duration_seconds: 720,
-          },
-          {
-            title: 'Create React App & Project Structure',
-            description: 'Setting up your first React project.',
-            youtube_url: 'https://www.youtube.com/watch?v=w7ejDZ8SWv8',
-            order_index: 2,
-            duration_seconds: 540,
-          },
-          {
-            title: 'JSX in Depth',
-            description: 'Understanding JSX syntax and expressions.',
-            youtube_url: 'https://www.youtube.com/watch?v=7fPXI_MnBOY',
-            order_index: 3,
-            duration_seconds: 480,
-          },
-        ],
-      },
-    },
-  });
-
-  // React Section 2: Components & Props
-  const reactSection2 = await prisma.section.create({
-    data: {
-      subject_id: reactSubject.id,
-      title: 'Components & Props',
-      order_index: 2,
-      videos: {
-        create: [
-          {
-            title: 'Functional Components',
-            description: 'Creating and using functional components.',
-            youtube_url: 'https://www.youtube.com/watch?v=Cla1WwguArA',
-            order_index: 1,
-            duration_seconds: 600,
-          },
-          {
-            title: 'Props and Data Flow',
-            description: 'Passing data between components with props.',
-            youtube_url: 'https://www.youtube.com/watch?v=PHaECbrKgs0',
-            order_index: 2,
-            duration_seconds: 540,
-          },
-        ],
-      },
-    },
-  });
-
-  // React Section 3: State & Hooks
-  const reactSection3 = await prisma.section.create({
-    data: {
-      subject_id: reactSubject.id,
-      title: 'State & Hooks',
-      order_index: 3,
-      videos: {
-        create: [
-          {
-            title: 'useState Hook',
-            description: 'Managing component state with useState.',
-            youtube_url: 'https://www.youtube.com/watch?v=O6P86uwfdR0',
-            order_index: 1,
-            duration_seconds: 660,
-          },
-          {
-            title: 'useEffect Hook',
-            description: 'Side effects, data fetching, and cleanup.',
-            youtube_url: 'https://www.youtube.com/watch?v=0ZJgIjIuY7U',
-            order_index: 2,
-            duration_seconds: 720,
-          },
-          {
-            title: 'Building a Mini Project',
-            description: 'Putting it all together with a hands-on project.',
-            youtube_url: 'https://www.youtube.com/watch?v=b9eMGE7QtTk',
-            order_index: 3,
-            duration_seconds: 900,
-          },
-        ],
-      },
-    },
-  });
-
-  console.log(`✅ Created subject: ${reactSubject.title} (${3} sections, ${8} videos)`);
-
-  // Enroll test user in both subjects
+  // Enroll test user in all subjects
   await prisma.enrollment.createMany({
-    data: [
-      { user_id: user.id, subject_id: jsSubject.id },
-      { user_id: user.id, subject_id: reactSubject.id },
-    ],
+    data: enrolledSubjectIds.map(id => ({ user_id: user.id, subject_id: id })),
     skipDuplicates: true,
   });
-  console.log(`✅ Enrolled user in both subjects`);
+  console.log(`✅ Enrolled user in all 15 subjects`);
 
   console.log('\n🎉 Seeding complete!');
   console.log('   Test credentials: student@test.com / password123');
