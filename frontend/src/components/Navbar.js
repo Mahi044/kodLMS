@@ -53,18 +53,22 @@ export default function Navbar() {
             {/* Nav links (authenticated) */}
             {isAuthenticated && (
               <div className="hidden sm:flex items-center gap-1">
-                <Link
-                  href="/dashboard"
-                  className="px-3 py-1.5 text-sm font-medium text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  href="/subjects"
-                  className="px-3 py-1.5 text-sm font-medium text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
-                >
-                  Courses
-                </Link>
+                {user?.role !== 'admin' && (
+                  <>
+                    <Link
+                      href="/dashboard"
+                      className="px-3 py-1.5 text-sm font-medium text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      href="/subjects"
+                      className="px-3 py-1.5 text-sm font-medium text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                    >
+                      Courses
+                    </Link>
+                  </>
+                )}
                 {user?.role === 'admin' && (
                   <Link
                     href="/admin"
