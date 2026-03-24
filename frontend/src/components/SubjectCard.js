@@ -46,38 +46,48 @@ export default function SubjectCard({ subject, progress, onEnrolled }) {
   };
 
   return (
-    <Link href={`/subjects/${subject.id}`}>
-      <div className="group relative bg-white dark:bg-surface-800/50 rounded-2xl border border-surface-200 dark:border-surface-700/50 overflow-hidden hover:shadow-xl hover:shadow-primary-500/10 transition-all duration-300 hover:-translate-y-1">
-        {/* Gradient top bar */}
-        <div
-          className={`h-2 ${
-            isCompleted
-              ? 'bg-gradient-to-r from-emerald-500 via-emerald-400 to-green-400'
-              : 'bg-gradient-to-r from-primary-500 via-primary-400 to-indigo-400'
-          }`}
-        />
-
-        <div className="p-6">
-          {/* Top row: Icon */}
-          <div className="flex items-start justify-between mb-4">
+    <Link href={`/subjects/${subject.id}`} className="h-full block">
+      <div className="group relative bg-white dark:bg-surface-800/50 rounded-2xl border border-surface-200 dark:border-surface-700/50 overflow-hidden hover:shadow-xl hover:shadow-primary-500/10 transition-all duration-300 hover:-translate-y-1 h-full flex flex-col">
+        {/* Thumbnail Image */}
+        <div className="relative w-full h-48 bg-surface-100 dark:bg-surface-900 overflow-hidden">
+          <img 
+            src={subject.thumbnail_url || `https://picsum.photos/seed/${subject.slug}/600/300`} 
+            alt={subject.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          
+          {/* Status Badge Overlaid on Image */}
+          <div className="absolute top-4 left-4">
             <div
-              className={`w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform ${
+              className={`w-10 h-10 rounded-xl flex items-center justify-center backdrop-blur-md shadow-lg ${
                 isCompleted
-                  ? 'bg-emerald-50 dark:bg-emerald-900/30'
-                  : 'bg-primary-50 dark:bg-primary-900/30'
+                  ? 'bg-emerald-500/90 text-white'
+                  : 'bg-primary-500/90 text-white'
               }`}
             >
               {isCompleted ? (
-                <HiCheckCircle className="w-6 h-6 text-emerald-500" />
+                <HiCheckCircle className="w-6 h-6" />
               ) : (
-                <HiAcademicCap className="w-6 h-6 text-primary-500" />
+                <HiAcademicCap className="w-6 h-6" />
               )}
             </div>
-
           </div>
+        </div>
 
+        {/* Gradient top bar (now moved below image or removed. Let's keep it as an accent strip below the image) */}
+        <div
+          className={`h-1 w-full ${
+            isCompleted
+              ? 'bg-gradient-to-r from-emerald-500 to-green-400'
+              : 'bg-gradient-to-r from-primary-500 to-indigo-400'
+          }`}
+        />
+
+        <div className="p-6 flex-1 flex flex-col">
           {/* Title */}
-          <h3 className="text-lg font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+          <h3 className="text-lg font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors mt-1">
             {subject.title}
           </h3>
 
