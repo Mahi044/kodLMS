@@ -66,10 +66,37 @@ async function deleteVideo(id) {
   });
 }
 
+async function getAdminRequests() {
+  return prisma.user.findMany({
+    where: { requested_role: 'admin' },
+    select: { id: true, name: true, email: true, created_at: true },
+    orderBy: { created_at: 'desc' },
+  });
+}
+
+async function approveAdmin(userId) {
+  return prisma.user.update({
+    where: { id: userId },
+    data: { role: 'admin', requested_role: null },
+    select: { id: true, name: true, email: true, role: true }
+  });
+}
+
+async function rejectAdmin(userId) {
+  return prisma.user.update({
+    where: { id: userId },
+    data: { requested_role: null },
+    select: { id: true, name: true, email: true }
+  });
+}
+
 module.exports = {
   createSubject,
   updateSubject,
   createSection,
   createVideo,
   deleteVideo,
+  getAdminRequests,
+  approveAdmin,
+  rejectAdmin
 };
