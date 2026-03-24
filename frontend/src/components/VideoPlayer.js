@@ -19,16 +19,41 @@ export default function VideoPlayer({ onVideoComplete }) {
   const playerRef = useRef(null);
   const progressIntervalRef = useRef(null);
 
-  // Extract YouTube video ID from URL
-  const getYouTubeId = (url) => {
-    if (!url) return null;
-    const match = url.match(
+  // Extract YouTube video ID and optional start time (t=...) from URL
+  const getVideoInfo = (url) => {
+    if (!url) return { id: null, start: 0 };
+    
+    // Extract ID
+    const idMatch = url.match(
       /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
     );
-    return match ? match[1] : url; // fallback: treat as raw ID
+    const id = idMatch ? idMatch[1] : url;
+
+    // Extract Start Time (t=...)
+    let start = 0;
+    try {
+      const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`);
+      const t = urlObj.searchParams.get('t');
+      if (t) {
+        // Handle "500" or "5m30s"
+        if (/^\d+$/.test(t)) {
+          start = parseInt(t);
+        } else {
+          // Simple 1m30s parser
+          const min = t.match(/(\d+)m/);
+          const s = t.match(/(\d+)s/);
+          if (min) start += parseInt(min[1]) * 60;
+          if (s) start += parseInt(s[1]);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to parse video URL for timestamps');
+    }
+
+    return { id, start };
   };
 
-  const youtubeId = getYouTubeId(videoData?.youtube_url);
+  const { id: youtubeId, start: urlStartTime } = getVideoInfo(videoData?.youtube_url);
 
   // Save progress to backend
   const saveProgress = useCallback(
@@ -89,11 +114,16 @@ export default function VideoPlayer({ onVideoComplete }) {
 
   const onReady = (event) => {
     playerRef.current = event.target;
-    // Resume from last position minus 5 seconds for context (clamped to >= 0)
+    
     const savedPos = videoData?.last_position_seconds || 0;
-    const resumePos = Math.max(0, savedPos - 5);
-    if (resumePos > 0) {
+    
+    if (savedPos > 0) {
+      // Resume from last position minus 5 seconds for context
+      const resumePos = Math.max(0, savedPos - 5);
       event.target.seekTo(resumePos, true);
+    } else if (urlStartTime > 0) {
+      // First time watching this segment -> jump to the curriculum timestamp
+      event.target.seekTo(urlStartTime, true);
     }
   };
 
