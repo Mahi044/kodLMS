@@ -19,4 +19,9 @@ router.post('/sections', adminController.createSection);
 router.post('/videos', adminController.createVideo);
 router.delete('/videos/:id', adminController.deleteVideo);
 
+// Admin Requests
+router.get('/users/requests', adminController.getAdminRequests);
+router.post('/users/:id/approve', adminController.approveAdmin);
+router.post('/users/:id/reject', adminController.rejectAdmin);
+
 module.exports = router;

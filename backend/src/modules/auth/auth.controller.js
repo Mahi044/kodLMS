@@ -14,7 +14,7 @@ const REFRESH_COOKIE_OPTIONS = {
  * Creates a new user account and returns tokens.
  */
 async function register(req, res) {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
 
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'Name, email, and password are required' });
@@ -23,7 +23,12 @@ async function register(req, res) {
     return res.status(400).json({ error: 'Password must be at least 6 characters' });
   }
 
-  const user = await authService.createUser({ name, email, password });
+  let requestedRole = null;
+  if (role === 'admin') {
+    requestedRole = 'admin';
+  }
+
+  const user = await authService.createUser({ name, email, password, requestedRole });
 
   // Generate tokens
   const accessToken = generateAccessToken(user);

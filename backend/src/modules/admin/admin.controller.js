@@ -54,10 +54,28 @@ async function deleteVideo(req, res) {
   res.json({ message: 'Video deleted successfully' });
 }
 
+async function getAdminRequests(req, res) {
+  const users = await adminService.getAdminRequests();
+  res.json({ users });
+}
+
+async function approveAdmin(req, res) {
+  const user = await adminService.approveAdmin(parseInt(req.params.id));
+  res.json({ message: 'User approved as admin', user });
+}
+
+async function rejectAdmin(req, res) {
+  const user = await adminService.rejectAdmin(parseInt(req.params.id));
+  res.json({ message: 'Request rejected', user });
+}
+
 module.exports = {
   createSubject,
   updateSubject,
   createSection,
   createVideo,
   deleteVideo,
+  getAdminRequests,
+  approveAdmin,
+  rejectAdmin
 };

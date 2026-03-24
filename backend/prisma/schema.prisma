@@ -14,11 +14,12 @@ model User {
   email         String          @unique @db.VarChar(255)
   password_hash String          @db.VarChar(255)
   name          String          @db.VarChar(255)
-  role          String          @default("student") @db.VarChar(50)
-  created_at    DateTime        @default(now())
-  enrollments   Enrollment[]
-  progress      VideoProgress[]
-  refreshTokens RefreshToken[]
+  role           String          @default("student") @db.VarChar(50)
+  requested_role String?         @db.VarChar(50)
+  created_at     DateTime        @default(now())
+  enrollments    Enrollment[]
+  progress       VideoProgress[]
+  refreshTokens  RefreshToken[]
 
   @@map("users")
 }

@@ -5,7 +5,7 @@ const { hashToken, getRefreshTokenExpiry } = require('../../utils/jwt');
 /**
  * Create a new user
  */
-async function createUser({ name, email, password }) {
+async function createUser({ name, email, password, requestedRole = null }) {
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
     const err = new Error('Email already registered');
@@ -15,8 +15,8 @@ async function createUser({ name, email, password }) {
 
   const password_hash = await hashPassword(password);
   return prisma.user.create({
-    data: { name, email, password_hash },
-    select: { id: true, name: true, email: true, role: true, created_at: true },
+    data: { name, email, password_hash, requested_role: requestedRole },
+    select: { id: true, name: true, email: true, role: true, requested_role: true, created_at: true },
   });
 }
 
