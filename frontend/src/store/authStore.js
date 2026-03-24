@@ -43,8 +43,8 @@ const useAuthStore = create((set, get) => ({
   /**
    * Register — creates account and auto-logs in.
    */
-  register: async (name, email, password) => {
-    const { data } = await api.post('/auth/register', { name, email, password });
+  register: async (name, email, password, role = 'student') => {
+    const { data } = await api.post('/auth/register', { name, email, password, role });
     localStorage.setItem('accessToken', data.accessToken);
     localStorage.setItem('user', JSON.stringify(data.user));
     set({ user: data.user, accessToken: data.accessToken, isAuthenticated: true });
