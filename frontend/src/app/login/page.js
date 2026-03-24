@@ -23,7 +23,8 @@ export default function LoginPage() {
       toast.success('Welcome back!');
       router.push('/subjects');
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Login failed');
+      const errMsg = err.response?.data?.error;
+      toast.error(typeof errMsg === 'string' ? errMsg : 'Login failed');
     } finally {
       setLoading(false);
     }
